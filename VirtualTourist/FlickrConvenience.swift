@@ -1,0 +1,116 @@
+//
+//  FlickrConvenience.swift
+//  VirtualTourist
+//
+//  Created by zenkiu on 2/12/17.
+//  Copyright © 2017 zenkiu. All rights reserved.
+//
+
+import UIKit
+import Foundation
+
+// MARK: - TMDBClient (Convenient Resource Methods)
+
+extension FlickrClient {
+    
+    
+    
+    func getFlickImagesByLocation(location: [String : AnyObject],completionHandlerForImages: @escaping (_ success : Bool, _ flickrImages : [FlickrImage]?, _ errorString:  String? ) -> Void){
+        
+        
+        getPhotoAlbumByLocation(location: location){
+            success, flickrImages, error in
+            
+            
+            if success {
+        
+                completionHandlerForImages(true, flickrImages, nil)
+                
+            }else{
+                
+                
+                completionHandlerForImages(false, nil, "No Images Found")
+            }
+            
+        }
+        
+    }
+    
+    
+
+    func getPhotoAlbumByLocation(location: [String : AnyObject], completionHandlerForAlbum: @escaping (_ sucess: Bool, _ flickrImages : [FlickrImage]?, _ errorString: String?) -> Void){
+        
+        let latitude = location["latitude"] as! String
+        let longitude = location["longitude"] as! String
+        
+        /* 1. Set the parameters */
+        
+        let methodParameters = [
+            FlickrConstants.FlickrParameterKeys.Method: FlickrConstants.FlickrParameterValues.GalleryPhotosSearchMethod,
+            FlickrConstants.FlickrParameterKeys.APIKey: FlickrConstants.FlickrParameterValues.APIKey,
+            FlickrConstants.FlickrParameterKeys.Extras: FlickrConstants.FlickrParameterValues.MediumURL,
+            FlickrConstants.FlickrParameterKeys.Format: FlickrConstants.FlickrParameterValues.ResponseFormat,
+            FlickrConstants.FlickrParameterKeys.NoJSONCallback: FlickrConstants.FlickrParameterValues.DisableJSONCallback, FlickrConstants.FlickrParameterKeys.Latitude : latitude, FlickrConstants.FlickrParameterKeys.Longitude : longitude, FlickrConstants.FlickrParameterKeys.Radius : FlickrConstants.FlickrParameterValues.Radius
+            
+        ]
+
+        
+       
+        /* 2. Make the request */
+        
+        
+        let task = FlickrClient.sharedInstance().taskForGETMethod(FlickrConstants.FlickrParameterValues.GalleryPhotosSearchMethod, parameters: methodParameters as [String : AnyObject] ){
+        
+            (results, error) in
+            
+            
+            func displayError(_ error: String){
+                
+                print(error)
+                completionHandlerForAlbum(false, nil, "No images found")
+            }
+            
+            if error != nil {
+                
+                displayError("Response returned an error")
+            }
+            
+             
+            guard let results = results else {
+                
+                displayError("Cannot find 'results' in Response")
+                return
+            }
+            
+           
+            /* GUARD: Are the "photos" and "photo" keys in our result? */
+            guard let photosDictionary = results[FlickrConstants.FlickrResponseKeys.Photos] as? [String:AnyObject], let photoArray = photosDictionary[FlickrConstants.FlickrResponseKeys.Photo] as? [[String:AnyObject]] else {
+                
+                    displayError("Cannot find 'photo' in Response")
+                return
+            }
+            
+            
+            
+            var flickrImages = [FlickrImage]()
+            
+            for photoArrayDictionary in photoArray {
+                
+                
+                let flickrImage : FlickrImage = FlickrImage(dictionary: photoArrayDictionary )
+                
+                flickrImages.append(flickrImage)
+            }
+            
+            
+            completionHandlerForAlbum(true, flickrImages, nil)
+            
+      
+            }
+
+                    
+        }
+        
+    
+
+}
