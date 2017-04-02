@@ -20,6 +20,7 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
     
     @IBOutlet weak var newCollectionButton: UIBarButtonItem!
     
+    @IBOutlet weak var noImagesFoundView: UIView!
     var selectedLocation : MKAnnotation?
     
     var flickrImages = [FlickrImage]()
@@ -36,6 +37,7 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
         collectionView.delegate = self
         collectionView.dataSource = self
         
+        noImagesFoundView.isHidden = true
         newCollectionButton.isEnabled = false
         
         initLocation()
@@ -112,6 +114,11 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
                         
                         self.imagesFoundCount = (flickrImages?.count)!
                         
+                        if self.imagesFoundCount == 0 {
+                        
+                            self.noImagesFoundView.isHidden = false
+                        }
+                        
                         print("getFlickImagesByLocation call completed>")
                         print("images count : \(flickrImages)")
                         
@@ -125,6 +132,7 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
                         
                     }else{
                         print("error>")
+                        //self.noImagesFoundView.isHidden = false
                        // self.showErrorAlert("Error in Logout")
                     }
                     

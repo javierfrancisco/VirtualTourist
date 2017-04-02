@@ -150,6 +150,23 @@
                                     <outlet property="delegate" destination="5u7-O3-g1T" id="X9p-fo-vC1"/>
                                 </connections>
                             </collectionView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pu5-XB-ZVM">
+                                <rect key="frame" x="0.0" y="307" width="375" height="150"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This pin has no images." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CK0-Ea-iUW">
+                                        <rect key="frame" x="97" y="64.5" width="180" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstItem="CK0-Ea-iUW" firstAttribute="centerY" secondItem="Pu5-XB-ZVM" secondAttribute="centerY" id="JEw-Dr-hpb"/>
+                                    <constraint firstAttribute="height" constant="150" id="e57-kU-mqr"/>
+                                    <constraint firstItem="CK0-Ea-iUW" firstAttribute="centerX" secondItem="Pu5-XB-ZVM" secondAttribute="centerX" id="nI2-35-X3m"/>
+                                </constraints>
+                            </view>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jr4-c3-sb9">
                                 <rect key="frame" x="0.0" y="623" width="375" height="44"/>
                                 <constraints>
@@ -168,13 +185,16 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="Pu5-XB-ZVM" secondAttribute="trailing" id="5Te-5Z-rnW"/>
                             <constraint firstItem="jr4-c3-sb9" firstAttribute="leading" secondItem="G0b-H7-aMX" secondAttribute="leading" id="7si-NS-9gT"/>
                             <constraint firstItem="K42-af-wu8" firstAttribute="leading" secondItem="G0b-H7-aMX" secondAttribute="leadingMargin" constant="-16" id="GxU-Et-sSp"/>
                             <constraint firstItem="jr4-c3-sb9" firstAttribute="top" secondItem="qAb-rU-Ouz" secondAttribute="bottom" id="HkN-8l-6lu"/>
                             <constraint firstItem="qAb-rU-Ouz" firstAttribute="top" secondItem="K42-af-wu8" secondAttribute="bottom" id="Iao-j4-eac"/>
                             <constraint firstItem="qAb-rU-Ouz" firstAttribute="leading" secondItem="G0b-H7-aMX" secondAttribute="leading" id="Ibe-p7-W0v"/>
                             <constraint firstAttribute="trailingMargin" secondItem="K42-af-wu8" secondAttribute="trailing" constant="-16" id="PJo-DV-PfE"/>
+                            <constraint firstItem="Pu5-XB-ZVM" firstAttribute="top" secondItem="mN5-6b-qzu" secondAttribute="bottom" constant="98" id="hAS-nK-p8V"/>
                             <constraint firstItem="uln-EC-4fB" firstAttribute="top" secondItem="jr4-c3-sb9" secondAttribute="bottom" id="iFQ-Sg-Dot"/>
+                            <constraint firstItem="Pu5-XB-ZVM" firstAttribute="leading" secondItem="G0b-H7-aMX" secondAttribute="leading" id="pe6-M3-6Nd"/>
                             <constraint firstAttribute="trailing" secondItem="qAb-rU-Ouz" secondAttribute="trailing" id="tD8-xW-fH3"/>
                             <constraint firstItem="K42-af-wu8" firstAttribute="top" secondItem="J6O-bX-hWO" secondAttribute="bottom" id="te9-BY-7Oo"/>
                             <constraint firstAttribute="trailing" secondItem="jr4-c3-sb9" secondAttribute="trailing" id="upE-V9-T9U"/>
@@ -185,11 +205,12 @@
                         <outlet property="collectionView" destination="qAb-rU-Ouz" id="vE2-dQ-1Vc"/>
                         <outlet property="mapVIew" destination="mN5-6b-qzu" id="yuG-cP-9kC"/>
                         <outlet property="newCollectionButton" destination="wEQ-KC-SlT" id="q4Y-Yq-I7h"/>
+                        <outlet property="noImagesFoundView" destination="Pu5-XB-ZVM" id="3Pb-WC-lN0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OSv-gv-F7u" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="942" y="126"/>
+            <point key="canvasLocation" x="941.60000000000002" y="125.4872563718141"/>
         </scene>
     </scenes>
 </document>
