@@ -1,4 +1,4 @@
-//
+ //
 //  FlickrConvenience.swift
 //  VirtualTourist
 //
@@ -50,6 +50,7 @@ extension FlickrClient {
             FlickrConstants.FlickrParameterKeys.APIKey: FlickrConstants.FlickrParameterValues.APIKey,
             FlickrConstants.FlickrParameterKeys.Extras: FlickrConstants.FlickrParameterValues.MediumURL,
             FlickrConstants.FlickrParameterKeys.Format: FlickrConstants.FlickrParameterValues.ResponseFormat,
+            FlickrConstants.FlickrParameterKeys.Limit: FlickrConstants.FlickrParameterValues.Limit,
             FlickrConstants.FlickrParameterKeys.NoJSONCallback: FlickrConstants.FlickrParameterValues.DisableJSONCallback, FlickrConstants.FlickrParameterKeys.Latitude : latitude, FlickrConstants.FlickrParameterKeys.Longitude : longitude, FlickrConstants.FlickrParameterKeys.Radius : FlickrConstants.FlickrParameterValues.Radius
             
         ]

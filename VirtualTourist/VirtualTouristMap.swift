@@ -17,7 +17,7 @@ extension VirtualTouristMapViewController  :  MKMapViewDelegate  {
     // method in TableViewDataSource.
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         
-        print("hi")
+        print("#function")
         
         let reuseId = "pin"
         
@@ -52,10 +52,40 @@ extension VirtualTouristMapViewController  :  MKMapViewDelegate  {
             let selectedLocation = sender as! MKAnnotation
             
             let controller = segue.destination as!
-            PhotoAlbumViewController
+            PhotoAlbumMapViewController
             controller.selectedLocation = selectedLocation
             
             
         }
     }
+    
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        
+        
+        print("location did change")
+        
+        
+        let mapLatitude  = mapView.region.center.latitude
+        let mapLongitude = mapView.region.center.longitude
+        let mapSpanLat = mapView.region.span.latitudeDelta
+        let mapSpanLon = mapView.region.span.longitudeDelta
+        
+        var centerRegionDictionary = [String:Double]()
+        
+        centerRegionDictionary[VTMap.Constants.MapLatitude] = mapLatitude
+        centerRegionDictionary[VTMap.Constants.MapLongitude] = mapLongitude
+        centerRegionDictionary[VTMap.Constants.MapSpanLatDelta] = mapSpanLat
+        centerRegionDictionary[VTMap.Constants.MapSpanLongDelta] = mapSpanLon
+        
+        print("mapLatitude:\(mapLatitude)")
+        print("mapLongitude:\(mapLongitude)" )
+        print("mapSpanLat:\(mapSpanLat)")
+        print("mapSpanLon:\(mapSpanLon)")
+        
+        
+        UserDefaults.standard.set(centerRegionDictionary, forKey: VTMap.Constants.CenterRegion)
+        
+
+    }
+    
 }

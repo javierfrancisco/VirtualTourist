@@ -7,12 +7,10 @@
 //
 
 import Foundation
-
-
 import UIKit
 import MapKit
 
-class PhotoAlbumViewController: UICollectionViewController, MKMapViewDelegate  {
+class PhotoAlbumViewController:  UICollectionViewController {
 
     @IBOutlet weak var mapVIew: MKMapView!
     

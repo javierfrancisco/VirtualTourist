@@ -22,4 +22,12 @@ struct FlickrImage {
         imageId = dictionary[FlickrConstants.FlickrResponseKeys.Photo] as?  String
         
     }
+    
+    init() {
+        
+        urlM = nil
+        imageId = nil
+        
+    }
+
 }

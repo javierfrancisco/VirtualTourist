@@ -25,4 +25,11 @@ class VTMap : NSObject{
     }
     
     
+    // MARK: Location Values
+    struct Location {
+        static let Latitude = "latitude"
+        static let Longitude = "longitude"
+    }
+    
+    
 }

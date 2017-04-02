@@ -8,12 +8,15 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class VirtualTouristMapViewController  : UIViewController {
 
 
     
     @IBOutlet weak var mapView: MKMapView!
+    
+    var fetchedResultsController : NSFetchedResultsController<NSFetchRequestResult>!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,12 +28,30 @@ class VirtualTouristMapViewController  : UIViewController {
         
         
         setInitLocation()
+       
         
         mapView.delegate = self
         
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(addAnnotationOnLongPress(gesture:)))
         longPressGesture.minimumPressDuration = 1.0
         self.mapView.addGestureRecognizer(longPressGesture)
+        
+        
+        ////
+        //
+        // Get the stack
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        let stack = delegate.stack
+        
+        // Create a fetchrequest
+        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Album")
+        fr.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        
+        // Create the FetchedResultsController
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
+        
+        
+         getAlbums()
 
         
     }
@@ -56,6 +77,32 @@ class VirtualTouristMapViewController  : UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    func getAlbums(){
+    
+        
+        print(#function)
+       // print("in getAlbum")
+        
+        
+        // Create Fetch Request
+        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Album")
+        
+        fr.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        
+       
+        
+        // Create FetchedResultsController
+        let fc = NSFetchedResultsController(fetchRequest: fr, managedObjectContext:fetchedResultsController!.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        
+        
+        
+        print("Sections found: \(fc.sections?.count)")
+        print("fetchedObjects found: \(fc.fetchedObjects?.count)")
+        
+        
+        
+    }
+    
     func setInitLocation(){
         
         print("in setInitLocation")
@@ -67,10 +114,6 @@ class VirtualTouristMapViewController  : UIViewController {
             let mapSpanLat = centerRegionDictionary[VTMap.Constants.MapSpanLatDelta]
             let mapSpanLon = centerRegionDictionary[VTMap.Constants.MapSpanLongDelta]
             
-            print("mapLatitude:\(mapLatitude)")
-            print("mapLongitude:\(mapLongitude)")
-            print("mapSpanLat:\(mapSpanLat)")
-            print("mapSpanLon:\(mapSpanLon)")
             
             //zoom the map to the selected location
             let span = MKCoordinateSpanMake(mapSpanLat!, mapSpanLon!)
@@ -93,31 +136,7 @@ class VirtualTouristMapViewController  : UIViewController {
         
         print("in Edit")
 
-        let mapLatitude  = mapView.region.center.latitude
-        let mapLongitude = mapView.region.center.longitude
-        let mapSpanLat = mapView.region.span.latitudeDelta
-        let mapSpanLon = mapView.region.span.longitudeDelta
-        
-        var centerRegionDictionary = [String:Double]()
-        
-        centerRegionDictionary[VTMap.Constants.MapLatitude] = mapLatitude
-        centerRegionDictionary[VTMap.Constants.MapLongitude] = mapLongitude
-        centerRegionDictionary[VTMap.Constants.MapSpanLatDelta] = mapSpanLat
-        centerRegionDictionary[VTMap.Constants.MapSpanLongDelta] = mapSpanLon
-        
-        print("mapLatitude:\(mapLatitude)")
-        print("mapLongitude:\(mapLongitude)" )
-        print("mapSpanLat:\(mapSpanLat)")
-        print("mapSpanLon:\(mapSpanLon)")
-        
-   
-        UserDefaults.standard.set(centerRegionDictionary, forKey: VTMap.Constants.CenterRegion)
-
-        
-        //Mode to next view controller
-        //locationGallerySegue
-        
-        //performSegue(withIdentifier: "locationGallerySegue", sender: self)
+       
         
     }
     

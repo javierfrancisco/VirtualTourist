@@ -28,6 +28,7 @@ struct FlickrConstants {
         static let Latitude = "lat"
         static let Longitude = "lon"
         static let Radius = "radius"
+        static let Limit = "per_page"
     }
     
     // MARK: Flickr Parameter Values
@@ -38,6 +39,7 @@ struct FlickrConstants {
         static let GalleryPhotosSearchMethod = "flickr.photos.search"
         static let MediumURL = "url_m"
         static let Radius = "5"
+        static let Limit = "20"
     }
     
     // MARK: Flickr Response Keys
