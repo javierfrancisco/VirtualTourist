@@ -157,7 +157,11 @@
                                 </constraints>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="RjF-fS-nDz"/>
-                                    <barButtonItem title="New Collection" id="wEQ-KC-SlT"/>
+                                    <barButtonItem title="New Collection" id="wEQ-KC-SlT">
+                                        <connections>
+                                            <action selector="getNewCollection:" destination="5u7-O3-g1T" id="hTK-8Q-iAh"/>
+                                        </connections>
+                                    </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="W0H-8Y-j9I"/>
                                 </items>
                             </toolbar>
@@ -180,11 +184,12 @@
                         <outlet property="collectionFlowLayout" destination="uSh-yz-JRY" id="8zw-nP-pd6"/>
                         <outlet property="collectionView" destination="qAb-rU-Ouz" id="vE2-dQ-1Vc"/>
                         <outlet property="mapVIew" destination="mN5-6b-qzu" id="yuG-cP-9kC"/>
+                        <outlet property="newCollectionButton" destination="wEQ-KC-SlT" id="q4Y-Yq-I7h"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OSv-gv-F7u" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="941.60000000000002" y="98.50074962518741"/>
+            <point key="canvasLocation" x="942" y="126"/>
         </scene>
     </scenes>
 </document>

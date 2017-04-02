@@ -39,7 +39,7 @@ struct FlickrConstants {
         static let GalleryPhotosSearchMethod = "flickr.photos.search"
         static let MediumURL = "url_m"
         static let Radius = "5"
-        static let Limit = "20"
+        static let Limit = "100"
     }
     
     // MARK: Flickr Response Keys

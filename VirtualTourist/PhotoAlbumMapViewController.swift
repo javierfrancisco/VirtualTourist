@@ -17,9 +17,13 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
     @IBOutlet weak var collectionFlowLayout: UICollectionViewFlowLayout!
     
     @IBOutlet weak var collectionView: UICollectionView!
+    
+    @IBOutlet weak var newCollectionButton: UIBarButtonItem!
+    
     var selectedLocation : MKAnnotation?
     
     var flickrImages = [FlickrImage]()
+    var imagesFoundCount = 0
     
     var fetchedResultsController : NSFetchedResultsController<NSFetchRequestResult>!
     
@@ -32,9 +36,12 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
         collectionView.delegate = self
         collectionView.dataSource = self
         
+        newCollectionButton.isEnabled = false
+        
         initLocation()
         
         loadImages()
+        
         
         let space: CGFloat = 0.0
         
@@ -103,16 +110,18 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
                             self.collectionView.reloadData()
                         }
                         
+                        self.imagesFoundCount = (flickrImages?.count)!
+                        
                         print("getFlickImagesByLocation call completed>")
                         print("images count : \(flickrImages)")
                         
-                        for flickr in flickrImages! {
-                            
-                            print("url:\(flickr.urlM)")
-                            
-                        }
+                       // for flickr in flickrImages! {
+                         //   print("url:\(flickr.urlM)")
+                       // }
                         
                         self.saveNewLocation(location: location, images: flickrImages!)
+                        
+                        
                         
                     }else{
                         print("error>")
@@ -139,6 +148,16 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
          print("Just created a album: \(album)")
          print("Sections found: \(fetchedResultsController.sections?.count)")
         
+        
+        
+        for flickrImage in images {
+            
+            
+            let image = Image(flickrImage: flickrImage, context: fetchedResultsController!.managedObjectContext)
+            
+            print("Just created a image: \(image)")
+            
+        }
     }
     
     func initLocation(){
@@ -196,6 +215,14 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
                     performUIUpdatesOnMain {
                         cell.locationImage.image = UIImage(data: data!)
                         cell.activityIndicator.stopAnimating()
+                        
+                        self.imagesFoundCount = self.imagesFoundCount - 1
+                        
+                        //If all images have been loaded, eneable the
+                        //new collection button
+                        if self.imagesFoundCount == 0 {
+                            self.newCollectionButton.isEnabled = true
+                        }
                     }
                 }
                 
@@ -227,5 +254,9 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
     }
     
     
+    @IBAction func getNewCollection(_ sender: Any) {
+        
+        print(#function)
+    }
     
 }
