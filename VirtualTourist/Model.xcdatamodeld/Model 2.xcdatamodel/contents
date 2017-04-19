@@ -4,16 +4,17 @@
         <attribute name="creationDate" attributeType="Date" usesScalarValueType="NO" indexed="YES" syncable="YES"/>
         <attribute name="latitude" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="longitude" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
-        <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Image" inverseName="album" inverseEntity="Image" syncable="YES"/>
+        <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="FlickrImage" inverseName="album" inverseEntity="FlickrImage" syncable="YES"/>
     </entity>
-    <entity name="Image" representedClassName=".Image" syncable="YES">
+    <entity name="FlickrImage" representedClassName=".FlickrImage" syncable="YES">
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO" indexed="YES" syncable="YES"/>
+        <attribute name="imageData" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" attributeType="String" syncable="YES"/>
         <relationship name="album" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Album" inverseName="images" inverseEntity="Album" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Album" positionX="-362" positionY="75" width="128" height="103"/>
-        <element name="Image" positionX="-54" positionY="-9" width="128" height="105"/>
+        <element name="Album" positionX="-362" positionY="75" width="128" height="105"/>
+        <element name="FlickrImage" positionX="-54" positionY="-9" width="128" height="120"/>
     </elements>
 </model>

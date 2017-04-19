@@ -23,16 +23,23 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
     @IBOutlet weak var noImagesFoundView: UIView!
     var selectedLocation : MKAnnotation?
     
+    var album : Album?
     var flickrImages = [FlickrImage]()
     var imagesFoundCount = 0
+    var flickrAlbumPage = 1
+    var selectedIndexes = Set<Int>()
+    var selectedImagesToBeDeleted = 0
     
     var fetchedResultsController : NSFetchedResultsController<NSFetchRequestResult>!
     
     override func viewDidLoad() {
-       
+        
         super.viewDidLoad()
         
         print("in PhotoAlbumViewController")
+        
+        print("latitude of album found: \(album?.latitude)")
+        print("longitude of album found: \(album?.longitude)")
         
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -52,96 +59,39 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
         collectionFlowLayout.minimumInteritemSpacing = space
         collectionFlowLayout.minimumLineSpacing = space
         collectionFlowLayout.itemSize = CGSize(width: dimension, height: dimension)
-        
-        ////
-        //
-        // Get the stack
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let stack = delegate.stack
-        
-        // Create a fetchrequest
-        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Album")
-        fr.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        
-        // Create the FetchedResultsController
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
-        
-        
-        
+
     }
     
     func loadImages(){
         
-        
+        print(#function)
         //initialize the cells to show activity indicator
+        /*
         if let size = Int(FlickrConstants.FlickrParameterValues.Limit){
-        
+            
             for _ in 0..<size{
-                let x = FlickrImage()
-                flickrImages.append(x)
+                //   let x = FlickrImage()
+                //   flickrImages.append(x)
             }
-        }
+        }*/
         
-        
-        
-        
-        if selectedLocation != nil {
+        if album != nil {
             
-            let mapLatitudeDegrees  = selectedLocation?.coordinate.latitude
-            let mapLongitudeDegrees = selectedLocation?.coordinate.longitude
-            
-            var location = [String : Any]()
-            
-            let mapLatitude = String(format:"%.2f", mapLatitudeDegrees!)
-            let mapLongitude = String(format:"%.2f", mapLongitudeDegrees!)
-            
-       
-            location[VTMap.Location.Latitude] =  mapLatitude
-            location[VTMap.Location.Longitude] = mapLongitude
-            
-            
-            FlickrClient.sharedInstance().getFlickImagesByLocation(location: location as [String : AnyObject]){ success, flickrImages, error in
+            if let imageCount = album?.images?.count {
                 
-             //   performUIUpdatesOnMain {
+                if imageCount > 0 {
                     
+                    print("A collection of images already exists for this album")
+                    showImagesFromAlbum()
                     
-                    if success{
-                        print("success>")
-                        self.flickrImages = flickrImages!
-                        performUIUpdatesOnMain {
-                            self.collectionView.reloadData()
-                        }
-                        
-                        self.imagesFoundCount = (flickrImages?.count)!
-                        
-                        if self.imagesFoundCount == 0 {
-                        
-                            self.noImagesFoundView.isHidden = false
-                        }
-                        
-                        print("getFlickImagesByLocation call completed>")
-                        print("images count : \(flickrImages)")
-                        
-                       // for flickr in flickrImages! {
-                         //   print("url:\(flickr.urlM)")
-                       // }
-                        
-                        self.saveNewLocation(location: location, images: flickrImages!)
-                        
-                        
-                        
-                    }else{
-                        print("error>")
-                        //self.noImagesFoundView.isHidden = false
-                       // self.showErrorAlert("Error in Logout")
-                    }
+                }else{
                     
-                    
-            //    }
-                
-                
+                    getCollection(page: 1)
+
+                }
                 
             }
+            
             
         }
         
@@ -149,70 +99,116 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
         
     }
     
-    func saveNewLocation(location: [String : Any], images : [FlickrImage] ){
+    func showImagesFromAlbum(){
     
-        let album = Album(location: location, context: fetchedResultsController!.managedObjectContext)
+        print(#function)
         
-         print("Just created a album: \(album)")
-         print("Sections found: \(fetchedResultsController.sections?.count)")
+        self.flickrImages = album?.images!.allObjects as! [FlickrImage]
+        
+        self.collectionView.reloadData()
+        
+        self.newCollectionButton.isEnabled = true
         
         
-        
-        for flickrImage in images {
-            
-            
-            let image = Image(flickrImage: flickrImage, context: fetchedResultsController!.managedObjectContext)
-            
-            print("Just created a image: \(image)")
-            
-        }
     }
+    
+    
+    func saveLoadedImage(flickrImage : FlickrImage, image: UIImage){
+        
+        // create NSData from UIImage
+        guard let imageData = UIImageJPEGRepresentation(image, 1) else {
+            // handle failed conversion
+            print("jpg error")
+            return
+        }
+        
+        flickrImage.imageData = imageData as NSData?
+        
+    }
+    
     
     func initLocation(){
         
-        if selectedLocation != nil {
+        if let currentAlbum = album {
+
+            print("currentAlbum.latitude \(currentAlbum.latitude)")
+            print("currentAlbum.longitude \(currentAlbum.longitude)")
             
-            let mapLatitude  = selectedLocation?.coordinate.latitude
-            let mapLongitude = selectedLocation?.coordinate.longitude
+            
+            let coordinate = CLLocationCoordinate2D(latitude: Double(currentAlbum.latitude), longitude: Double(currentAlbum.longitude))
+            
+            
             let mapSpanLat : Double = 1
             let mapSpanLon : Double  = 1
             
             //zoom the map to the selected location
             let span = MKCoordinateSpanMake(mapSpanLat, mapSpanLon)
-            let location = CLLocationCoordinate2DMake(mapLatitude!, mapLongitude!)
-            let region = MKCoordinateRegionMake(location, span)
+            
+            let region = MKCoordinateRegionMake(coordinate, span)
             self.mapVIew.setRegion(region, animated: false)
             
-            
-            mapVIew.addAnnotation(selectedLocation!)
+            showAlbum(album: currentAlbum)
         }
     }
     
+    
+    func showAlbum(album : Album){
+        
+        
+        // We will create an MKPointAnnotation for each dictionary in "locations". The
+        // point annotations will be stored in this array, and then provided to the map view.
+        var annotations = [MKPointAnnotation]()
+        
+        
+        // The lat and long are used to create a CLLocationCoordinates2D instance.
+        let coordinate = CLLocationCoordinate2D(latitude: Double(album.latitude), longitude: Double(album.longitude))
+        
+        print("album.latitude:\(album.latitude)")
+        
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = coordinate
+        
+        // Finally we place the annotation in an array of annotations.
+        annotations.append(annotation)
+        
+        
+        
+        // When the array is complete, we add the annotations to the map.
+        self.mapVIew.addAnnotations(annotations)
+        
+    }
     
     
     // Collection View Data Source
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        // print("number of memes: \(memes.count)")
-        // return memes.count
         return flickrImages.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        //print("-in cellForItemAtIndexPath-")
+        print(#function)
         
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCollectionViewCell", for: indexPath as IndexPath) as! PhotoCollectionViewCell
         
-    
+        
         cell.initCell()
-       
+        
         
         let flickrImage = self.flickrImages[indexPath.row]
         
-        if let imageUrlString = flickrImage.urlM{
+        if flickrImage.imageData != nil {
+
+            print("image exists")
+            //get image from object
+            cell.locationImage.image = UIImage(data: flickrImage.imageData as! Data)
+            flickrImageDidLoad(cell)
         
+        }else if let imageUrlString = flickrImage.url{
+            
+            print("download image")
+            
             // if an image exists at the url, set the image and title
             let imageURL = URL(string: imageUrlString)
             
@@ -222,23 +218,30 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
                     
                     performUIUpdatesOnMain {
                         cell.locationImage.image = UIImage(data: data!)
-                        cell.activityIndicator.stopAnimating()
                         
-                        self.imagesFoundCount = self.imagesFoundCount - 1
+                        //save the loaded image
+                        self.saveLoadedImage(flickrImage: flickrImage, image:  cell.locationImage.image!)
                         
-                        //If all images have been loaded, eneable the
-                        //new collection button
-                        if self.imagesFoundCount == 0 {
-                            self.newCollectionButton.isEnabled = true
-                        }
+                        self.flickrImageDidLoad(cell)
                     }
                 }
                 
             }
-         }
-        
+        }
         
         return cell
+    }
+    
+    func flickrImageDidLoad(_ cell : PhotoCollectionViewCell){
+    
+        cell.activityIndicator.stopAnimating()
+        self.imagesFoundCount = self.imagesFoundCount - 1
+        
+        //If all images have been loaded, eneable the
+        //new collection button
+        if self.imagesFoundCount == 0 {
+            self.newCollectionButton.isEnabled = true
+        }
     }
     
     func getDataFromUrl(url: URL, completion: @escaping (_ data: Data?, _  response: URLResponse?, _ error: Error?) -> Void) {
@@ -250,21 +253,137 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        // print("-in didSelectItemAtIndexPath-")
+        print(#function)
         
-        /*
-         let detailController = self.storyboard!.instantiateViewController(withIdentifier: "MemeDetailViewController") as! MemeDetailViewController
-         
-         detailController.meme = self.memes[indexPath.row]
-         self.navigationController!.pushViewController(detailController, animated: true)
-         
-         */
+        if let cell = collectionView.cellForItem(at: indexPath){
+
+            
+            flickrImages[indexPath.row].deleteSw = !flickrImages[indexPath.row].deleteSw
+            
+            
+            if flickrImages[indexPath.row].deleteSw {
+                
+                cell.alpha = 0.5
+                selectedImagesToBeDeleted = selectedImagesToBeDeleted + 1
+                
+            }else{
+                cell.alpha = 1.0
+                selectedImagesToBeDeleted = selectedImagesToBeDeleted - 1
+            }
+            
+            if selectedImagesToBeDeleted > 0 {
+                
+                newCollectionButton.title = "Remove Selected Pictures"
+            }else{
+                newCollectionButton.title = "New Collection"
+            }
+    
+                   }
     }
     
     
     @IBAction func getNewCollection(_ sender: Any) {
         
         print(#function)
+        
+        if newCollectionButton.title == "New Collection"{
+        
+            album?.images = nil
+            flickrAlbumPage = flickrAlbumPage + 1
+            getCollection(page: flickrAlbumPage)
+        }else{
+            //delete selected images
+            
+            print("in delete")
+            
+            flickrImages = flickrImages.filter{
+                (flickImage : FlickrImage) -> Bool in
+                return !flickImage.deleteSw
+            }
+            
+            album?.images  = Set(flickrImages) as NSSet?
+            
+
+            self.collectionView?.reloadData()
+            
+            newCollectionButton.title = "New Collection"
+            saveContext()
+        
+        }
+        
+        
+    }
+    
+    func saveContext(){
+    
+        
+        print(#function)
+        
+        do {
+            try CoreDataStack.sharedInstance().saveContext()
+        } catch {
+            print("Error while saving.")
+        }
+        
+    }
+    
+    func getCollection(page : Int){
+        
+        
+        print(#function)
+        
+        
+        let stack =  CoreDataStack.sharedInstance()
+        
+        let mapLatitude  = album?.latitude
+        let mapLongitude = album?.longitude
+        
+        var location = [String : Any]()
+        
+        // let mapLatitude = String(format:"%.2f", mapLatitudeDegrees!)
+        //let mapLongitude = String(format:"%.2f", mapLongitudeDegrees!)
+        
+        
+        location[VTMap.Location.Latitude] =  mapLatitude
+        location[VTMap.Location.Longitude] = mapLongitude
+        
+        
+        FlickrClient.sharedInstance().getFlickImagesByLocation(album: album!, page: page, context: stack.context){ success, flickrImages, error in
+            
+            //   performUIUpdatesOnMain {
+            
+            
+            if success{
+                print("success>")
+                self.flickrImages = flickrImages!
+                performUIUpdatesOnMain {
+                    self.collectionView.reloadData()
+                }
+                
+                self.imagesFoundCount = (flickrImages?.count)!
+                
+                if self.imagesFoundCount == 0 {
+                    
+                    self.noImagesFoundView.isHidden = false
+                }
+                
+                print("getFlickImagesByLocation call completed>")
+                print("images count : \(flickrImages?.count)")
+
+                
+            }else{
+                print("error>")
+                //self.noImagesFoundView.isHidden = false
+                // self.showErrorAlert("Error in Logout")
+            }
+            
+            
+            //    }
+            
+            
+            
+        }
+        
     }
     
 }

@@ -8,6 +8,7 @@
 
 import UIKit
 import Foundation
+import CoreData
 
 // MARK: - TMDBClient (Convenient Resource Methods)
 
@@ -15,10 +16,10 @@ extension FlickrClient {
     
     
     
-    func getFlickImagesByLocation(location: [String : AnyObject],completionHandlerForImages: @escaping (_ success : Bool, _ flickrImages : [FlickrImage]?, _ errorString:  String? ) -> Void){
+    func getFlickImagesByLocation(album : Album, page : Int, context: NSManagedObjectContext, completionHandlerForImages: @escaping (_ success : Bool, _ flickrImages : [FlickrImage]?, _ errorString:  String? ) -> Void){
         
         
-        getPhotoAlbumByLocation(location: location){
+        getPhotoAlbumByLocation(album : album, pageNum: page, context : context){
             success, flickrImages, error in
             
             
@@ -38,10 +39,15 @@ extension FlickrClient {
     
     
 
-    func getPhotoAlbumByLocation(location: [String : AnyObject], completionHandlerForAlbum: @escaping (_ sucess: Bool, _ flickrImages : [FlickrImage]?, _ errorString: String?) -> Void){
+    func getPhotoAlbumByLocation(album: Album, pageNum : Int, context: NSManagedObjectContext,  completionHandlerForAlbum: @escaping (_ sucess: Bool, _ flickrImages : [FlickrImage]?,   _ errorString: String?) -> Void){
         
-        let latitude = location["latitude"] as! String
-        let longitude = location["longitude"] as! String
+        let latitude = String(album.latitude)
+        let longitude = String(album.longitude)
+        
+        var page = "1"//by default page is 1
+        if pageNum != 0 {
+            page = String(pageNum)
+        }
         
         /* 1. Set the parameters */
         
@@ -51,6 +57,7 @@ extension FlickrClient {
             FlickrConstants.FlickrParameterKeys.Extras: FlickrConstants.FlickrParameterValues.MediumURL,
             FlickrConstants.FlickrParameterKeys.Format: FlickrConstants.FlickrParameterValues.ResponseFormat,
             FlickrConstants.FlickrParameterKeys.Limit: FlickrConstants.FlickrParameterValues.Limit,
+            FlickrConstants.FlickrParameterKeys.Page: page,
             FlickrConstants.FlickrParameterKeys.NoJSONCallback: FlickrConstants.FlickrParameterValues.DisableJSONCallback, FlickrConstants.FlickrParameterKeys.Latitude : latitude, FlickrConstants.FlickrParameterKeys.Longitude : longitude, FlickrConstants.FlickrParameterKeys.Radius : FlickrConstants.FlickrParameterValues.Radius
             
         ]
@@ -98,7 +105,7 @@ extension FlickrClient {
             for photoArrayDictionary in photoArray {
                 
                 
-                let flickrImage : FlickrImage = FlickrImage(dictionary: photoArrayDictionary )
+                let flickrImage : FlickrImage = FlickrImage(dictionary: photoArrayDictionary, album: album , context : context)
                 
                 flickrImages.append(flickrImage)
             }

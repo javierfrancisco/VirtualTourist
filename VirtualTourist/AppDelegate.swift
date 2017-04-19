@@ -12,7 +12,6 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    let stack = CoreDataStack(modelName: "Model")!
 
     
     func checkIfFirstLaunch() {
@@ -42,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print(#function)
         
         do {
-            try stack.saveContext()
+            try CoreDataStack.sharedInstance().saveContext()
         } catch {
             print("Error while saving.")
         }
@@ -56,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print(#function)
         
         do {
-            try stack.saveContext()
+            try CoreDataStack.sharedInstance().saveContext()
         } catch {
             print("Error while saving.")
         }

@@ -29,6 +29,7 @@ struct FlickrConstants {
         static let Longitude = "lon"
         static let Radius = "radius"
         static let Limit = "per_page"
+        static let Page = "page"
     }
     
     // MARK: Flickr Parameter Values
@@ -40,6 +41,7 @@ struct FlickrConstants {
         static let MediumURL = "url_m"
         static let Radius = "5"
         static let Limit = "100"
+        static let Page = "1"
     }
     
     // MARK: Flickr Response Keys

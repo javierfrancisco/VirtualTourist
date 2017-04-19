@@ -44,13 +44,36 @@
                                     <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Ezf-Mn-eCC">
                                         <rect key="frame" x="0.0" y="0.0" width="383" height="603"/>
                                     </mapView>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="y0v-Mg-K7i" userLabel="DeletePinView">
+                                        <rect key="frame" x="0.0" y="603" width="383" height="65"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yAT-u8-W7m" userLabel="DeletePinButton">
+                                                <rect key="frame" x="0.0" y="0.0" width="383" height="65"/>
+                                                <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                <state key="normal" title="Tap Pins to Delete">
+                                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                </state>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" red="0.95757669209999996" green="0.46789377360000001" blue="0.17928113700000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="yAT-u8-W7m" firstAttribute="top" secondItem="y0v-Mg-K7i" secondAttribute="top" id="GQQ-hl-4Gw"/>
+                                            <constraint firstAttribute="trailing" secondItem="yAT-u8-W7m" secondAttribute="trailing" id="NCo-qs-5df"/>
+                                            <constraint firstAttribute="bottom" secondItem="yAT-u8-W7m" secondAttribute="bottom" id="PT5-BU-16M"/>
+                                            <constraint firstAttribute="height" constant="65" id="crt-xT-zp4"/>
+                                            <constraint firstItem="yAT-u8-W7m" firstAttribute="leading" secondItem="y0v-Mg-K7i" secondAttribute="leading" id="jTo-jQ-yJ3"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
+                                    <constraint firstItem="y0v-Mg-K7i" firstAttribute="leading" secondItem="okQ-zD-8UM" secondAttribute="leading" id="7zC-BC-VkL"/>
                                     <constraint firstItem="Ezf-Mn-eCC" firstAttribute="top" secondItem="okQ-zD-8UM" secondAttribute="top" id="8d5-a9-DO7"/>
                                     <constraint firstItem="Ezf-Mn-eCC" firstAttribute="leading" secondItem="okQ-zD-8UM" secondAttribute="leading" id="9CE-l1-qkO"/>
                                     <constraint firstAttribute="bottom" secondItem="Ezf-Mn-eCC" secondAttribute="bottom" id="J3H-vB-FPF"/>
                                     <constraint firstAttribute="trailing" secondItem="Ezf-Mn-eCC" secondAttribute="trailing" id="eYB-ma-lRo"/>
+                                    <constraint firstAttribute="bottom" secondItem="y0v-Mg-K7i" secondAttribute="bottom" constant="-65" id="rFy-Gb-DUU"/>
+                                    <constraint firstAttribute="trailing" secondItem="y0v-Mg-K7i" secondAttribute="trailing" id="y6O-Vn-ZB5"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -70,6 +93,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="136.80000000000001" y="126.38680659670166"/>
         </scene>
         <!--Photo Album View Controller-->
         <scene sceneID="IXc-xx-tMq">

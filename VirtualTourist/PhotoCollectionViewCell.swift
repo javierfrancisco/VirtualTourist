@@ -27,9 +27,11 @@ class PhotoCollectionViewCell: UICollectionViewCell {
        // locationImage.backgroundColor = UIColor.red
         locationImage.layer.cornerRadius = 8.0
         locationImage.clipsToBounds = true
+        locationImage.image = nil
         
         activityIndicator.startAnimating()
         activityIndicator.clipsToBounds = true
+        self.alpha = 1.0
         
     }
 

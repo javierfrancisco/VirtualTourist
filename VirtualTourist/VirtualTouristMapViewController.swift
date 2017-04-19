@@ -15,16 +15,32 @@ class VirtualTouristMapViewController  : UIViewController {
 
     
     @IBOutlet weak var mapView: MKMapView!
+    var isEditButtonSelected = false
+    var editButton : UIBarButtonItem?
     
     var fetchedResultsController : NSFetchedResultsController<NSFetchRequestResult>!
     
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        print("In viewWillAppear")
+        
+        isEditButtonSelected = false
+    }
+    
     override func viewDidLoad() {
+        
+        print(#function)
+        
+        
         super.viewDidLoad()
         
+        self.title = "Virtual Tourist"
+
         
-        let editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(VirtualTouristMapViewController.edit))
+        editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(VirtualTouristMapViewController.edit))
         
-        navigationItem.rightBarButtonItems = [editButton]
+        navigationItem.rightBarButtonItems = [editButton!]
         
         
         setInitLocation()
@@ -37,20 +53,7 @@ class VirtualTouristMapViewController  : UIViewController {
         self.mapView.addGestureRecognizer(longPressGesture)
         
         
-        ////
-        //
-        // Get the stack
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let stack = delegate.stack
-        
-        // Create a fetchrequest
-        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Album")
-        fr.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        
-        // Create the FetchedResultsController
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
-        
-        
+    
          getAlbums()
 
         
@@ -69,7 +72,27 @@ class VirtualTouristMapViewController  : UIViewController {
             annotation.title = "Title"
             annotation.subtitle = "subtitle"
             self.mapView.addAnnotation(annotation)
+            
+            saveAlbum(coordinate: coordinate)
         }
+    }
+    
+    func saveAlbum(coordinate : CLLocationCoordinate2D){
+        
+        
+        var location = [String : Any]()
+        
+        let mapLatitude = String(format:"%.2f", coordinate.latitude)
+        let mapLongitude = String(format:"%.2f", coordinate.longitude)
+        
+        location["latitude"] =  mapLatitude
+        location["longitude"] = mapLongitude
+
+        let stack = CoreDataStack.sharedInstance()
+        let album = Album(location: location, context: stack.context)
+        
+        print("Just created a album: \(album)")
+    
     }
 
     override func didReceiveMemoryWarning() {
@@ -78,31 +101,56 @@ class VirtualTouristMapViewController  : UIViewController {
     }
     
     func getAlbums(){
-    
         
         print(#function)
-       // print("in getAlbum")
+  
+        let stack =  CoreDataStack.sharedInstance()
         
-        
-        // Create Fetch Request
+        // Create a fetchrequest
         let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Album")
-        
-        fr.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        
-       
-        
-        // Create FetchedResultsController
-        let fc = NSFetchedResultsController(fetchRequest: fr, managedObjectContext:fetchedResultsController!.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
-        
-        
-        
-        print("Sections found: \(fc.sections?.count)")
-        print("fetchedObjects found: \(fc.fetchedObjects?.count)")
-        
-        
+
+        do {
+            let albums = try stack.context.fetch(fr) as? [Album]
+            
+            print("num of albums found: \(albums?.count)")
+            
+            showAlbums(albums: albums!)
+
+        } catch {
+            print("unable to fetch albums")
+        }
         
     }
     
+    func showAlbums(albums : [Album]){
+        
+        
+        // We will create an MKPointAnnotation for each dictionary in "locations". The
+        // point annotations will be stored in this array, and then provided to the map view.
+        var annotations = [MKPointAnnotation]()
+        
+        
+        for album in albums{
+        
+            // The lat and long are used to create a CLLocationCoordinates2D instance.
+            let coordinate = CLLocationCoordinate2D(latitude: Double(album.latitude), longitude: Double(album.longitude))
+            
+             print("album.latitude:\(album.latitude)")
+            
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+
+            // Finally we place the annotation in an array of annotations.
+            annotations.append(annotation)
+            
+        }
+    
+    
+        // When the array is complete, we add the annotations to the map.
+        self.mapView.addAnnotations(annotations)
+
+    }
+
     func setInitLocation(){
         
         print("in setInitLocation")
@@ -130,14 +178,28 @@ class VirtualTouristMapViewController  : UIViewController {
 
       
     }
+    
+
 
     
     func edit(){
         
-        print("in Edit")
-
-       
+        print(#function)
         
+        isEditButtonSelected = !isEditButtonSelected
+        
+        var buttonHeigth : CGFloat =  65
+
+        if isEditButtonSelected {
+            
+            buttonHeigth *= -1
+            editButton?.title = "Done"
+        }else{
+            editButton?.title = "Edit"
+        }
+        
+        view.frame.origin.y += buttonHeigth
+
     }
     
     

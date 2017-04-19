@@ -8,6 +8,8 @@
 
 import UIKit
 import MapKit
+import CoreData
+
 
 extension VirtualTouristMapViewController  :  MKMapViewDelegate  {
 
@@ -17,7 +19,7 @@ extension VirtualTouristMapViewController  :  MKMapViewDelegate  {
     // method in TableViewDataSource.
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         
-        print("#function")
+        print(#function)
         
         let reuseId = "pin"
         
@@ -41,22 +43,88 @@ extension VirtualTouristMapViewController  :  MKMapViewDelegate  {
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         print("pin was touched")
         
-        performSegue(withIdentifier: "locationGallerySegue", sender: view.annotation)
+        if let selectedLocation = view.annotation {
+            
+            let album = getAlbumByLocation(coordinate: selectedLocation.coordinate)
+            
+            if(self.isEditButtonSelected){
+            
+                //delete pins
+                print("delete this pin")
+                deletePinLocation(album)
+                self.mapView.removeAnnotation(selectedLocation)
+                
+            }else{
+                //go to next view
+                performSegue(withIdentifier: "locationGallerySegue", sender: album)
+                
+            }
+            
+            
+            mapView.deselectAnnotation(view.annotation, animated: false)
+        
+        }
+        
+    }
+    
+    func deletePinLocation(_ album : Album){
+    
+        let stack = CoreDataStack.sharedInstance()
+        
+        stack.context.delete(album)
+       
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     
         if (segue.identifier == "locationGallerySegue") {
             
-            
-            let selectedLocation = sender as! MKAnnotation
-            
             let controller = segue.destination as!
             PhotoAlbumMapViewController
-            controller.selectedLocation = selectedLocation
-            
-            
+            controller.album = sender as! Album?
         }
+    }
+    
+    func getAlbumByLocation(coordinate : CLLocationCoordinate2D) -> Album{
+        
+        var album : Album!
+        
+        let mapLatitude = String(format:"%.2f", coordinate.latitude)
+        let mapLongitude = String(format:"%.2f", coordinate.longitude)
+        
+        let stack = CoreDataStack.sharedInstance()
+    
+        
+        // Create Fetch Request
+        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Album")
+
+        print("latitude:\(mapLatitude)")
+        
+     
+        let pred = NSPredicate(format: "latitude = %@ AND longitude = %@", argumentArray: [Float(mapLatitude)!, Float(mapLongitude)!])
+        
+        fr.predicate = pred
+        
+
+        
+        do {
+            if let albums = try stack.context.fetch(fr) as? [Album]{
+            
+                print("num of album found: \(albums.count)")
+                
+                if albums.count > 0 {
+                    album = albums.first
+                    
+                    print("num of images in album found: \(album.images?.count)")
+                }
+            }
+            
+   
+        } catch {
+            print("unable to fetch album")
+        }
+        
+        return album
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
@@ -77,10 +145,10 @@ extension VirtualTouristMapViewController  :  MKMapViewDelegate  {
         centerRegionDictionary[VTMap.Constants.MapSpanLatDelta] = mapSpanLat
         centerRegionDictionary[VTMap.Constants.MapSpanLongDelta] = mapSpanLon
         
-        print("mapLatitude:\(mapLatitude)")
+       /* print("mapLatitude:\(mapLatitude)")
         print("mapLongitude:\(mapLongitude)" )
         print("mapSpanLat:\(mapSpanLat)")
-        print("mapSpanLon:\(mapSpanLon)")
+        print("mapSpanLon:\(mapSpanLon)") */
         
         
         UserDefaults.standard.set(centerRegionDictionary, forKey: VTMap.Constants.CenterRegion)
