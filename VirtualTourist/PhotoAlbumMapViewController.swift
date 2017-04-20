@@ -283,14 +283,35 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
         
         if newCollectionButton.title == "New Collection"{
         
+            if let imgs = album?.images {
+                deleteImagesFromCoreData(imgs)
+            }
+            
+            
             album?.images = nil
             flickrAlbumPage = flickrAlbumPage + 1
             getCollection(page: flickrAlbumPage)
+            
+            
         }else{
             //delete selected images
             
             print("in delete")
             
+            
+            //deleted images
+            let deleteFlickrImages = flickrImages.filter{
+                (flickImage : FlickrImage) -> Bool in
+                return flickImage.deleteSw
+            }
+            
+            if let imgsSet = Set(deleteFlickrImages) as NSSet? {
+            
+                deleteImagesFromCoreData(imgsSet)
+            }
+            
+
+            //valid images
             flickrImages = flickrImages.filter{
                 (flickImage : FlickrImage) -> Bool in
                 return !flickImage.deleteSw
@@ -309,6 +330,23 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
         
     }
     
+    func deleteImagesFromCoreData(_ deleteFlickrImages : NSSet){
+        
+            for flickrImage in deleteFlickrImages {
+                
+                 print("delete img:")
+                
+                CoreDataStack.sharedInstance().context.delete(flickrImage as! FlickrImage)
+            }
+            
+            do {
+                try CoreDataStack.sharedInstance().saveContext()
+            } catch {
+                print("Error while saving.")
+            }
+  
+    }
+    
     func saveContext(){
     
         
@@ -321,6 +359,7 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
         }
         
     }
+    
     
     func getCollection(page : Int){
         

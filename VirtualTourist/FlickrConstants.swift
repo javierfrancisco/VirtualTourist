@@ -40,7 +40,7 @@ struct FlickrConstants {
         static let GalleryPhotosSearchMethod = "flickr.photos.search"
         static let MediumURL = "url_m"
         static let Radius = "5"
-        static let Limit = "100"
+        static let Limit = "5"
         static let Page = "1"
     }
     
