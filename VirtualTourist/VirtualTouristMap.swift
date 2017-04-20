@@ -72,6 +72,7 @@ extension VirtualTouristMapViewController  :  MKMapViewDelegate  {
         let stack = CoreDataStack.sharedInstance()
         
         stack.context.delete(album)
+        saveContext()
        
     }
     

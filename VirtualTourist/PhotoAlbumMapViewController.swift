@@ -123,7 +123,7 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
         }
         
         flickrImage.imageData = imageData as NSData?
-        
+        saveContext()
     }
     
     
@@ -212,7 +212,7 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
             // if an image exists at the url, set the image and title
             let imageURL = URL(string: imageUrlString)
             
-            getDataFromUrl(url: imageURL!){ data, response, error in
+            FlickrClient.sharedInstance().getDataFromUrl(url: imageURL!){ data, response, error in
                 
                 if error == nil{
                     
@@ -244,12 +244,7 @@ class PhotoAlbumMapViewController:  UIViewController, UICollectionViewDelegate, 
         }
     }
     
-    func getDataFromUrl(url: URL, completion: @escaping (_ data: Data?, _  response: URLResponse?, _ error: Error?) -> Void) {
-        URLSession.shared.dataTask(with: url) {
-            (data, response, error) in
-            completion(data, response, error)
-            }.resume()
-    }
+    
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         

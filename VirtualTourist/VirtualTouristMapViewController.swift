@@ -91,8 +91,24 @@ class VirtualTouristMapViewController  : UIViewController {
         let stack = CoreDataStack.sharedInstance()
         let album = Album(location: location, context: stack.context)
         
+        
+        saveContext()
+        
         print("Just created a album: \(album)")
     
+    }
+    
+    func saveContext(){
+        
+        
+        print(#function)
+        
+        do {
+            try CoreDataStack.sharedInstance().saveContext()
+        } catch {
+            print("Error while saving.")
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
